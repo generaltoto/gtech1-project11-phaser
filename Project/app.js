@@ -1,6 +1,7 @@
 const config = {
   width: 800,
   height: 500,
+  parent: 'gameContainer',
   type: Phaser.AUTO,
   physics: {
     default: 'arcade',
@@ -12,16 +13,17 @@ const config = {
   }
 }
 
-var game = new Phaser.Game(config)
+var game = new Phaser.Game(config, 'gameContainer')
 let test
 let cursors
+
 
 function preload() {
   this.load.image('test', 'img/test.png')
 }
 
 function create() {
-  test = this.physics.add.image(400, 200, 'test')
+  test = this.physics.add.image(400, 250, 'test')
   test.body.collideWorldBounds = true
   cursors = this.input.keyboard.createCursorKeys()
 }
