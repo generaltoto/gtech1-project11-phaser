@@ -2,6 +2,9 @@ const config = {
   width: 800,
   height: 500,
   type: Phaser.AUTO,
+  physics: {
+    default: 'arcade',
+  },
   scene: {
     preload: preload,
     create: create,
@@ -10,15 +13,34 @@ const config = {
 }
 
 var game = new Phaser.Game(config)
+let test
+let cursors
 
 function preload() {
   this.load.image('test', 'img/test.png')
 }
 
 function create() {
-  this.add.image(100, 100, 'test')
+  test = this.physics.add.image(400, 200, 'test')
+  test.body.collideWorldBounds = true
+  cursors = this.input.keyboard.createCursorKeys()
 }
 
 function update() {
+  test.setVelocityX(0);
+  test.setVelocityY(0);
 
+
+  if (cursors.up.isDown) {
+    test.setVelocity(0, -300)
+  }
+  if (cursors.down.isDown) {
+    test.setVelocity(0, 300)
+  }
+  if (cursors.right.isDown) {
+    test.setVelocity(300, 0)
+  }
+  if (cursors.left.isDown) {
+    test.setVelocity(-300, 0)
+  }
 }
