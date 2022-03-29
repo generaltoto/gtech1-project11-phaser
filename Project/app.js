@@ -17,8 +17,7 @@ var game = new Phaser.Game(config);
 let test
 let cursors
 var platform
-var graphics
-
+var bounds
 
 function preload() {
   this.load.image('test', 'img/test.png')
@@ -26,26 +25,32 @@ function preload() {
 }
 
 function create() {
-
-  graphics = this.add.graphics();
-
+  //box border
+  var cube = this.add.graphics(bounds.x, bounds.y);
+  var color = 0xffff00;
   var thickness = 2;
-  var color = 0x00ff00;
   var alpha = 1;
+  cube.lineStyle(thickness, color, alpha);
+  cube.strokeRect(0, 0, 500, 500);
+  this.physics.world.enable(cube);
+  cube.body.setSize(500, 500)
+  cube.body.setCollideWorldBounds(true);
+  cube.body.setBounce(1, 1);
+  test.input.boundsRect = bounds;
 
-  graphics.lineStyle(thickness, color, alpha);
-  graphics.strokeRect(100, 32, 600, 600);
-
-  platform = this.physics.add.image(400, 150, 'platform')
+  //platform
+  platform = this.physics.add.image(300, 150, 'platform')
   platform.setImmovable(true)
   platform.body.allowGravity = false
 
+  //player
   test = this.physics.add.image(400, 250, 'test')
   test.body.collideWorldBounds = true
   cursors = this.input.keyboard.createCursorKeys()
 
+  //collision
   this.physics.add.collider(test, platform);
-  this.physics.add.collider(test, graphics);
+  this.physics.add.collider(test, cube);
 }
 
 function update() {
@@ -67,6 +72,4 @@ function update() {
   else if (cursors.down.isDown) {
     test.setVelocityY(150);
   }
-
-  //test
 }
