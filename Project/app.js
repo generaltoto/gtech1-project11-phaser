@@ -1,6 +1,6 @@
 const config = {
-  width: 800,
-  height: 500,
+  width: 1200,
+  height: 800,
   parent: 'gameContainer',
   type: Phaser.AUTO,
   physics: {
@@ -16,7 +16,8 @@ const config = {
 var game = new Phaser.Game(config);
 let test
 let cursors
-var platform;
+var platform
+var graphics
 
 
 function preload() {
@@ -26,7 +27,16 @@ function preload() {
 
 function create() {
 
-  platform = this.physics.add.image(500, 100, 'platform')
+  graphics = this.add.graphics();
+
+  var thickness = 2;
+  var color = 0x00ff00;
+  var alpha = 1;
+
+  graphics.lineStyle(thickness, color, alpha);
+  graphics.strokeRect(100, 32, 600, 600);
+
+  platform = this.physics.add.image(400, 150, 'platform')
   platform.setImmovable(true)
   platform.body.allowGravity = false
 
@@ -34,19 +44,8 @@ function create() {
   test.body.collideWorldBounds = true
   cursors = this.input.keyboard.createCursorKeys()
 
-  /*this.physics.add.collider(
-    test,
-    platform,
-    function (_test, _platform)
-    {
-      if (_test.body.touching.up && _platform.body.touching.down)
-      {
-        create
-      }
-    }
-  )*/
-
   this.physics.add.collider(test, platform);
+  this.physics.add.collider(test, graphics);
 }
 
 function update() {
