@@ -52,17 +52,19 @@ function update() {
   test.setVelocityX(0);
   test.setVelocityY(0);
 
-
-  if (cursors.up.isDown) {
-    test.setVelocity(0, -300)
-  }
-  if (cursors.down.isDown) {
-    test.setVelocity(0, 300)
-  }
-  if (cursors.right.isDown) {
-    test.setVelocity(300, 0)
-  }
+  // Horizontal movement
   if (cursors.left.isDown) {
-    test.setVelocity(-300, 0)
+    test.setVelocityX(-150);
+  }
+  else if (cursors.right.isDown) {
+    test.setVelocityX(150);
+  }
+
+  // Vertical movement
+  if (cursors.up.isDown) {
+    test.setVelocityY(-150);
+  }
+  else if (cursors.down.isDown) {
+    test.setVelocityY(150);
   }
 }
