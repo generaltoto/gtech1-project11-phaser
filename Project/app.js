@@ -67,4 +67,6 @@ function update() {
   else if (cursors.down.isDown) {
     test.setVelocityY(150);
   }
+
+  //test
 }
