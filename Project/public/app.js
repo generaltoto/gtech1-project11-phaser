@@ -20,8 +20,8 @@ var platform
 var bounds
 
 function preload() {
-  this.load.image('test', 'img/test.png')
-  this.load.image('platform', 'img/platform.png')
+  this.load.image('test', '../img/test.png')
+  this.load.image('platform', '../img/platform.png')
 }
 
 function create() {

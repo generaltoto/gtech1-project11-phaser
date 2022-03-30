@@ -1,3 +1,3 @@
-/Project/node_modules
-/Project/package-lock.json
-/Project/package.json
+node_modules
+package-lock.json
+package.json
