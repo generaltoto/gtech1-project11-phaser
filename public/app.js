@@ -8,6 +8,7 @@ class Level extends Phaser.Scene {
     this.load.image('button', 'assets/bomb.png');
     this.load.image('logo', 'assets/logo.png');
     this.load.tilemapTiledJSON('map', 'assets/untitled.json');
+    this.load.image('test', 'assets/test.png')
   }
 
   create() {
@@ -31,15 +32,43 @@ class Level extends Phaser.Scene {
     layer2.setCollisionByProperty({ collides: true });
     const debugGraphics = this.add.graphics().setAlpha(0.75);
     layer2.renderDebug(debugGraphics, {
-      tileColor: null, // Color of non-colliding tiles
-      collidingTileColor: new Phaser.Display.Color(243, 134, 48, 255), // Color of colliding tiles
-      faceColor: new Phaser.Display.Color(40, 39, 37, 255) // Color of colliding face edges
+      tileColor: new Phaser.Display.Color(0,255,0,255), // Color of non-colliding tiles
+      collidingTileColor: new Phaser.Display.Color(0, 0, 255, 255), // Color of colliding tiles
+      faceColor: new Phaser.Display.Color(255, 0, 0, 255) // Color of colliding face edges
     });
+
+    test = this.physics.add.image(500, 0, 'test')
+    test.body.collideWorldBounds = true
+    cursors = this.input.keyboard.createCursorKeys()
+    
+    this.physics.add.collider(test, layer2);
+
 
     this.clickButton = this.add.sprite(1000, 1000, 'button')
       .setInteractive()
       .on('pointerdown', () => this.managePopup());
 
+  }
+
+  update() {
+    test.setVelocityX(0);
+    test.setVelocityY(0);
+  
+    // Horizontal movement
+    if (cursors.left.isDown) {
+      test.setVelocityX(-150);
+    }
+    else if (cursors.right.isDown) {
+      test.setVelocityX(150);
+    }
+  
+    // Vertical movement
+    if (cursors.up.isDown) {
+      test.setVelocityY(-150);
+    }
+    else if (cursors.down.isDown) {
+      test.setVelocityY(150);
+    }
   }
 
   managePopup() {
@@ -59,8 +88,14 @@ var config = {
   type: Phaser.AUTO,
   parent: 'phaser-example',
   width: 1300,
-  height: 1300,
-  scene: new Level()
+  height: 800,
+  scene: new Level(),
+  physics: {
+    default: 'arcade',
+  },
 };
+
+var cursors
+var test
 
 var game = new Phaser.Game(config);
