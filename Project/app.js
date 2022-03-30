@@ -26,7 +26,7 @@ function preload() {
 
 function create() {
   //box border
-  var cube = this.add.graphics(bounds.x, bounds.y);
+  var cube = this.add.graphics();
   var color = 0xffff00;
   var thickness = 2;
   var alpha = 1;
@@ -36,8 +36,7 @@ function create() {
   cube.body.setSize(500, 500)
   cube.body.setCollideWorldBounds(true);
   cube.body.setBounce(1, 1);
-  test.input.boundsRect = bounds;
-
+  
   //platform
   platform = this.physics.add.image(300, 150, 'platform')
   platform.setImmovable(true)
