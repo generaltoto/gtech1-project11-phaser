@@ -62,6 +62,10 @@ function create() {
   //Collision
   test.body.collideWorldBounds = true;
   this.physics.add.collider(test, layer2);
+
+  //Camera
+  this.cameras.main.startFollow(test, false);
+  this.cameras.main.setZoom(2);
 }
 
 function update() {
