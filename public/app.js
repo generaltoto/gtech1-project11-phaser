@@ -1,15 +1,15 @@
 const config = {
   type: Phaser.AUTO,
   parent: 'gameContainer',
-  width: 1200,
-  height: 800,
+  width: 1280,
+  height: 640,
   physics: {
     default: 'arcade',
   },
   scene: {
     preload: preload,
     create: create,
-    update: update
+    update: update,
   }
 };
 
@@ -22,7 +22,7 @@ function preload() {
   this.load.image('tiles', 'assets/iso-64x64-building.png');
   this.load.image('button', 'assets/bomb.png');
   this.load.image('logo', 'assets/logo.png');
-  this.load.tilemapTiledJSON('map', 'assets/untitled.json');
+  this.load.tilemapTiledJSON('map', 'assets/untitled4.json');
   this.load.image('test', 'assets/phaser-dude.png')
 }
 
@@ -44,24 +44,35 @@ function create() {
   var tileset1 = map.addTilesetImage('nom', 'tiles');
   var layer1 = map.createLayer('Tile Layer 1', [tileset1]);
   var layer2 = map.createLayer('Tile Layer 2', [tileset1]);
+  var layer3 = map.createLayer('Tile Layer 3', [tileset1]);
+  var layer4 = map.createLayer('Tile Layer 4', [tileset1]);
+  var layer5 = map.createLayer('Tile Layer 5', [tileset1]);
+
+
 
   //Debug hitbox hurtbox
   layer2.setCollisionByProperty({ collides: true });
-  const debugGraphics = this.add.graphics().setAlpha(0.75);
-  layer2.renderDebug(debugGraphics, {
-    tileColor: new Phaser.Display.Color(0, 255, 0, 255), // Color of non-colliding tiles
-    collidingTileColor: new Phaser.Display.Color(0, 0, 255, 255), // Color of colliding tiles
-    faceColor: new Phaser.Display.Color(255, 0, 0, 255) // Color of colliding face edges
-  });
+  // const debugGraphics = this.add.graphics().setAlpha(0.75);
+  // layer2.renderDebug(debugGraphics, {
+  //   tileColor: new Phaser.Display.Color(0, 255, 0, 255), // Color of non-colliding tiles
+  //   collidingTileColor: new Phaser.Display.Color(0, 0, 255, 255), // Color of colliding tiles
+  //   faceColor: new Phaser.Display.Color(255, 0, 0, 255) // Color of colliding face edges
+  // });
 
 
   //Player and controls
-  test = this.physics.add.sprite(500, 0, 'test')
+  test = this.physics.add.sprite(850, 465, 'test')
   cursors = this.input.keyboard.createCursorKeys()
 
   //Collision
   test.body.collideWorldBounds = true;
+  this.physics.world.setBounds(0, 0, 1280, 640);
   this.physics.add.collider(test, layer2);
+
+  //Camera
+  this.cameras.main.setZoom(2)
+  this.cameras.main.startFollow(test, false, 0.5, 0.5, 0, 0);
+  text = this.add.text(0, 0, 'Cursors to move', { font: '16px Courier', fill: '#00ff00' }).setScrollFactor(0);
 }
 
 function update() {
@@ -81,6 +92,14 @@ function update() {
   } else if (cursors.down.isDown) {
     test.body.setVelocityY(100);
   }
+
+  text.setText([
+    'screen x: ' + this.input.x,
+    'screen y: ' + this.input.y,
+    'world x: ' + this.input.mousePointer.worldX,
+    'world y: ' + this.input.mousePointer.worldY
+  ]);
+
 }
 
 function managePopup() {
