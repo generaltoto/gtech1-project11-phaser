@@ -51,29 +51,16 @@ function create() {
   this.layer4 = map.createLayer('Tile Layer 4', [tileset1]);
   this.layer5 = map.createLayer('Tile Layer 5', [tileset1]);
 
+  //Coordinate
+  this.text = this.add.text(10, 10, 'Cursors to move', { font: '16px Courier', fill: '#00ff00' }).setScrollFactor(0);
+
   //Player and controls
-  player = this.physics.add.sprite(515, 490, 'test')
+  this.player = this.physics.add.sprite(515, 660, 'test')
   cursors = this.input.keyboard.createCursorKeys()
   this.MousePointer = this.input.activePointer;
   this.playerIsMoving = false;
   this.path = [];
   this.nextTileInPath = undefined;
-
-  //Collision
-  player.body.collideWorldBounds = true;
-  this.physics.add.collider(player, this.layer2);
-
-  //Coordinate
-  this.text = this.add.text(10, 10, 'Cursors to move', { font: '16px Courier', fill: '#00ff00' }).setScrollFactor(0);
-
-  //Z-Index
-  player.setDepth(5)
-  layer1.setDetph(6)
-  layer2.setDetph(4)
-  layer3.setDetph(3)
-  layer4.setDetph(2)
-  layer5.setDetph(1)
-
 }
 
 var focusedTile = null;
@@ -102,21 +89,29 @@ function mapToWorld(x, y, layer) {
 
 
 function update() {
+  //Z-Index
+  this.player.setDepth(this.player.z = 1)
+  this.layer2.setDepth(this.layer2.z = 1)
+  this.layer3.setDepth(this.layer3.z = 2)
+  this.layer4.setDepth(this.layer4.z = 2)
+  this.layer5.setDepth(this.layer5.z = 2)
+  console
+
   // Stop any previous movement from the last frame
-  player.body.setVelocity(0);
+  this.player.body.setVelocity(0);
 
   // Horizontal movement
   if (cursors.left.isDown) {
-    player.body.setVelocityX(-100);
+    this.player.body.setVelocityX(-100);
   } else if (cursors.right.isDown) {
-    player.body.setVelocityX(100);
+    this.player.body.setVelocityX(100);
   }
 
   // Vertical movement
   if (cursors.up.isDown) {
-    player.body.setVelocityY(-100);
+    this.player.body.setVelocityY(-100);
   } else if (cursors.down.isDown) {
-    player.body.setVelocityY(100);
+    this.player.body.setVelocityY(100);
   }
 
   var coordsPointerInMap = worldToMap(this.MousePointer.x, this.MousePointer.y, this.layer1.layer);
@@ -137,7 +132,7 @@ function update() {
     focusedTile.setVisible(true);
     this.playerIsMoving = true;
     var coordsPointerInMap = worldToMap(this.MousePointer.x, this.MousePointer.y, this.layer1.layer);
-    var coordsPlayerInMap = worldToMap(player.x, player.y + player.height / 2, this.layer1.layer);
+    var coordsPlayerInMap = worldToMap(this.player.x, this.player.y + this.player.height / 2, this.layer1.layer);
     var test = mapToWorld(4, 6, this.layer1.layer);
     test = worldToMap(test.x, test.y, this.layer1.layer);
     this.path = findPathTo(coordsPlayerInMap, coordsPointerInMap, this.layer1, this.layer2);
@@ -162,11 +157,11 @@ function update() {
     }
 
     var nextPos = mapToWorld(this.nextTileInPath.x, this.nextTileInPath.y, this.layer1.layer);
-    nextPos.y -= player.height / 2;
-    this.physics.moveTo(player, nextPos.x, nextPos.y, 100);
+    nextPos.y -= this.player.height / 2;
+    this.physics.moveTo(this.player, nextPos.x, nextPos.y, 100);
 
-    dx = nextPos.x - player.x;
-    dy = nextPos.y - player.y;
+    dx = nextPos.x - this.player.x;
+    dy = nextPos.y - this.player.y;
 
     if (Math.abs(dx) < 5) {
       dx = 0;
