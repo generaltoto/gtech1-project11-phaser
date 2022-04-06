@@ -148,8 +148,7 @@ function update() {
     'world y: ' + this.input.mousePointer.worldY
   ]);
 
-  console.log(coordsPlayerInMap)
-
+  //EVENT QUAND ON ARRIVE FIN NIVEAU
   if (coordsPlayerInMap.x == 18, coordsPlayerInMap.y == 10) {
     console.log("yes");
   }
