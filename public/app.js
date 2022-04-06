@@ -1,4 +1,3 @@
-
 const config = {
   type: Phaser.AUTO,
   parent: 'gameContainer',
@@ -26,7 +25,7 @@ function preload() {
   //preloading assets
   this.load.image('ground', 'Assets/allassets.png');
   this.load.tilemapTiledJSON('map', 'Assets/map.json');
-  this.load.image('player', 'Assets/phaser-dude.png')
+  this.load.image('player', 'Assets/fantome_dirdb.png')
 }
 
 function create() {
