@@ -12,7 +12,7 @@ const config = {
     create: create,
     update: update,
     worldToMap
-  }
+  },
 };
 
 var game = new Phaser.Game(config);
@@ -27,9 +27,14 @@ function preload() {
   this.load.image('logo', 'assets/logo.png');
   this.load.tilemapTiledJSON('map', 'assets/untitled.json');
   this.load.image('test', 'assets/phaser-dude.png')
+  this.load.audio('ambiance', '')
 }
 
 function create() {
+  //Audio
+  // this.ambiance = this.sound.add("ambiance")
+  // this.ambiance.play();
+
   //popup
   this.popupIsOpen = false;
   this.popup = this.add.sprite(700, 700, "logo");
@@ -55,7 +60,7 @@ function create() {
   this.text = this.add.text(10, 10, 'Cursors to move', { font: '16px Courier', fill: '#00ff00' }).setScrollFactor(0);
 
   //Player and controls
-  this.player = this.physics.add.sprite(515, 660, 'test')
+  this.player = this.physics.add.sprite(515, 520, 'test')
   cursors = this.input.keyboard.createCursorKeys()
   this.MousePointer = this.input.activePointer;
   this.playerIsMoving = false;
@@ -95,7 +100,6 @@ function update() {
   this.layer3.setDepth(this.layer3.z = 2)
   this.layer4.setDepth(this.layer4.z = 2)
   this.layer5.setDepth(this.layer5.z = 2)
-  console
 
   // Stop any previous movement from the last frame
   this.player.body.setVelocity(0);
@@ -189,6 +193,10 @@ function update() {
     'world x: ' + this.input.mousePointer.worldX,
     'world y: ' + this.input.mousePointer.worldY
   ]);
+
+  // if (worldToMap(this.player.x, y, layer) == 0,0) {
+  //   console.log("yes");
+  // }
 }
 
 /*
