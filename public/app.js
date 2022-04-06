@@ -31,6 +31,9 @@ function preload() {
 
 function create() {
 
+  //Coordinate
+  this.text = this.add.text(10, 10, 'Cursors to move', { font: '16px Courier', fill: '#00ff00' }).setScrollFactor(0);
+
   /* MAP */
   let map = this.add.tilemap('map')
   var tileset1 = map.addTilesetImage('allassets', 'ground');
@@ -50,31 +53,6 @@ function create() {
   this.path = [];
   this.nextTileInPath = undefined;
 }
-
-var focusedTile = null;
-var focusedTile2 = null;
-
-function worldToMap(x, y, layer) {
-  var cell = { x: 0, y: 0 };
-
-  var x_pos = (x - 16 - layer.x) / layer.baseTileWidth;
-  var y_pos = (y - 24 - layer.y) / layer.baseTileHeight;
-
-  cell.y = Math.round(y_pos - x_pos);
-  cell.x = Math.round(x_pos + y_pos);
-
-  return cell;
-}
-
-function mapToWorld(x, y, layer) {
-  var pos = { x: 0, y: 0 };
-
-  pos.x = (x - y) * layer.baseTileWidth / 2 + 16 + layer.x;
-  pos.y = (x + y) * layer.baseTileHeight / 2 + 24 + layer.y;
-
-  return pos;
-}
-
 
 function update() {
   //Z-Index
@@ -110,9 +88,11 @@ function update() {
     focusedTile.setVisible(false);
   }
 
+  var coordsPlayerInMap = worldToMap(this.player.x, this.player.y + this.player.height / 2, this.layer1.layer);
+
+
   if (this.MousePointer.isDown && !this.playerIsMoving) {
     var coordsPointerInMap = worldToMap(this.MousePointer.x, this.MousePointer.y, this.layer1.layer);
-    var coordsPlayerInMap = worldToMap(this.player.x, this.player.y + this.player.height / 2, this.layer1.layer);
     if (focusedTile && this.layer1.getTileAt(coordsPointerInMap.x, coordsPointerInMap.y).index != -1) { focusedTile.setVisible(true); }
     this.playerIsMoving = true;
     this.path = findPathTo(coordsPlayerInMap, coordsPointerInMap, this.layer1, this.layer2);
@@ -169,9 +149,43 @@ function update() {
     'world y: ' + this.input.mousePointer.worldY
   ]);
 
-  // if (worldToMap(this.player.x, y, layer) == 0,0) {
-  //   console.log("yes");
-  // }
+  console.log(coordsPlayerInMap)
+
+  if (coordsPlayerInMap.x == 18, coordsPlayerInMap.y == 10) {
+    console.log("yes");
+  }
+
+  if (coordsPlayerInMap.x == 19, coordsPlayerInMap.y == 10) {
+    console.log("yes");
+  }
+
+  if (coordsPlayerInMap.x == 20, coordsPlayerInMap.y == 10) {
+    console.log("yes");
+  }
+}
+
+var focusedTile = null;
+var focusedTile2 = null;
+
+function worldToMap(x, y, layer) {
+  var cell = { x: 0, y: 0 };
+
+  var x_pos = (x - 16 - layer.x) / layer.baseTileWidth;
+  var y_pos = (y - 24 - layer.y) / layer.baseTileHeight;
+
+  cell.y = Math.round(y_pos - x_pos);
+  cell.x = Math.round(x_pos + y_pos);
+
+  return cell;
+}
+
+function mapToWorld(x, y, layer) {
+  var pos = { x: 0, y: 0 };
+
+  pos.x = (x - y) * layer.baseTileWidth / 2 + 16 + layer.x;
+  pos.y = (x + y) * layer.baseTileHeight / 2 + 24 + layer.y;
+
+  return pos;
 }
 
 function coordsToKey(x, y) {
