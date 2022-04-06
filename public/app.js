@@ -41,13 +41,15 @@ function create() {
   this.clickButton = this.add.sprite(1000, 1000, 'button')
     .setInteractive()
     .on('pointerdown', () => this.managePopup());
-  
+
   //Map Tile iso
   var map = this.add.tilemap('map');
   var tileset1 = map.addTilesetImage('nom', 'tiles');
   this.layer1 = map.createLayer('Tile Layer 1', [tileset1]);
   this.layer2 = map.createLayer('Tile Layer 2', [tileset1]);
-
+  this.layer3 = map.createLayer('Tile Layer 3', [tileset1]);
+  this.layer4 = map.createLayer('Tile Layer 4', [tileset1]);
+  this.layer5 = map.createLayer('Tile Layer 5', [tileset1]);
 
   //Player and controls
   player = this.physics.add.sprite(515, 490, 'test')
@@ -63,13 +65,22 @@ function create() {
 
   //Coordinate
   this.text = this.add.text(10, 10, 'Cursors to move', { font: '16px Courier', fill: '#00ff00' }).setScrollFactor(0);
+
+  //Z-Index
+  player.setDepth(5)
+  layer1.setDetph(6)
+  layer2.setDetph(4)
+  layer3.setDetph(3)
+  layer4.setDetph(2)
+  layer5.setDetph(1)
+
 }
 
 var focusedTile = null;
 var focusedTile2 = null;
 
-function worldToMap(x, y, layer){
-  var cell = {x: 0, y: 0};
+function worldToMap(x, y, layer) {
+  var cell = { x: 0, y: 0 };
 
   var x_pos = (x - 16 - layer.x) / layer.baseTileWidth;
   var y_pos = (y - 24 - layer.y) / layer.baseTileHeight;
@@ -80,8 +91,8 @@ function worldToMap(x, y, layer){
   return cell;
 }
 
-function mapToWorld(x, y, layer){
-  var pos = {x: 0, y: 0};
+function mapToWorld(x, y, layer) {
+  var pos = { x: 0, y: 0 };
 
   pos.x = (x - y) * layer.baseTileWidth / 2 + 16 + layer.x;
   pos.y = (x + y) * layer.baseTileHeight / 2 + 24 + layer.y;
@@ -107,17 +118,17 @@ function update() {
   } else if (cursors.down.isDown) {
     player.body.setVelocityY(100);
   }
-  
+
   var coordsPointerInMap = worldToMap(this.MousePointer.x, this.MousePointer.y, this.layer1.layer);
-  if(focusedTile){
+  if (focusedTile) {
     focusedTile.setVisible(true);
   }
-  if(coordsPointerInMap.x >= 0 && coordsPointerInMap.y >= 0 && coordsPointerInMap.x < this.layer1.layer.width && coordsPointerInMap.y < this.layer1.layer.height){
+  if (coordsPointerInMap.x >= 0 && coordsPointerInMap.y >= 0 && coordsPointerInMap.x < this.layer1.layer.width && coordsPointerInMap.y < this.layer1.layer.height) {
     focusedTile = this.layer1.getTileAt(coordsPointerInMap.x, coordsPointerInMap.y);
     focusedTile.setVisible(false);
   }
 
-  if(this.MousePointer.isDown && !this.playerIsMoving){
+  if (this.MousePointer.isDown && !this.playerIsMoving) {
     /*
     var targetPos = mapToWorld(focusedTile.x, focusedTile.y, this.layer1.layer);
     player.x = targetPos.x;
@@ -126,51 +137,51 @@ function update() {
     focusedTile.setVisible(true);
     this.playerIsMoving = true;
     var coordsPointerInMap = worldToMap(this.MousePointer.x, this.MousePointer.y, this.layer1.layer);
-    var coordsPlayerInMap = worldToMap(player.x, player.y + player.height/2, this.layer1.layer);
+    var coordsPlayerInMap = worldToMap(player.x, player.y + player.height / 2, this.layer1.layer);
     var test = mapToWorld(4, 6, this.layer1.layer);
     test = worldToMap(test.x, test.y, this.layer1.layer);
     this.path = findPathTo(coordsPlayerInMap, coordsPointerInMap, this.layer1, this.layer2);
-    if(this.path.length > 0){
-      for(let i=0; i < this.path.length; i++){
+    if (this.path.length > 0) {
+      for (let i = 0; i < this.path.length; i++) {
         this.layer1.getTileAt(this.path[i].x, this.path[i].y).setVisible(false);
       }
     }
     console.log(this.path);
-  } 
+  }
 
-  if(this.playerIsMoving){
+  if (this.playerIsMoving) {
     let dx = 0;
     let dy = 0;
 
-    if (!this.nextTileInPath && this.path.length > 0){
+    if (!this.nextTileInPath && this.path.length > 0) {
       this.nextTileInPath = getNextTileInPath(this.path);
     }
-    else if(!this.nextTileInPath && this.path.length === 0){
+    else if (!this.nextTileInPath && this.path.length === 0) {
       this.playerIsMoving = false;
       return;
     }
 
     var nextPos = mapToWorld(this.nextTileInPath.x, this.nextTileInPath.y, this.layer1.layer);
-    nextPos.y -= player.height/2;
+    nextPos.y -= player.height / 2;
     this.physics.moveTo(player, nextPos.x, nextPos.y, 100);
 
     dx = nextPos.x - player.x;
     dy = nextPos.y - player.y;
 
-    if(Math.abs(dx) < 5){
+    if (Math.abs(dx) < 5) {
       dx = 0;
     }
 
-    if(Math.abs(dy) < 5){
+    if (Math.abs(dy) < 5) {
       dy = 0;
     }
 
-    if(dx === 0 && dy === 0){
-      if(this.path.length > 0){
+    if (dx === 0 && dy === 0) {
+      if (this.path.length > 0) {
         this.layer1.getTileAt(this.nextTileInPath.x, this.nextTileInPath.y).setVisible(true);
         this.nextTileInPath = this.path.shift();
       }
-      else{
+      else {
         this.playerIsMoving = false;
         this.nextTileInPath = null;
       }
@@ -191,18 +202,18 @@ function estimatedCostBetween(ColA, RowA, ColB, RowB){
 }
 */
 
-function coordsToKey(x, y){
+function coordsToKey(x, y) {
   return x + 'xXx' + y
 }
 
-function findPathTo(start, target, groundLayer, collisionsLayer){
+function findPathTo(start, target, groundLayer, collisionsLayer) {
   console.log(target)
 
-  if(!groundLayer.getTileAt(target.x, target.y)){
+  if (!groundLayer.getTileAt(target.x, target.y)) {
     return [];
   }
 
-  if(collisionsLayer.layer.data[target.y][target.x].index !== -1){
+  if (collisionsLayer.layer.data[target.y][target.x].index !== -1) {
     return [];
   }
 
@@ -214,46 +225,46 @@ function findPathTo(start, target, groundLayer, collisionsLayer){
   const startKey = coordsToKey(start.x, start.y);
   const targetKey = coordsToKey(target.x, target.y);
 
-  parentForKey[startKey] = {key:'', position: {x: -1, y: -1}}
+  parentForKey[startKey] = { key: '', position: { x: -1, y: -1 } }
 
   queue.push(start);
 
-  while(queue.length > 0){
+  while (queue.length > 0) {
     const currentTile = queue.shift();
     const currentX = currentTile.x;
     const currentY = currentTile.y;
     const currentKey = coordsToKey(currentX, currentY);
 
-    const neighbors = [{x: currentX, y: currentY + 1}, //haut
-                       {x: currentX, y: currentY - 1}, //bas
-                       {x: currentX + 1, y: currentY}, //droite
-                       {x: currentX - 1, y: currentY}  //gauche
+    const neighbors = [{ x: currentX, y: currentY + 1 }, //haut
+    { x: currentX, y: currentY - 1 }, //bas
+    { x: currentX + 1, y: currentY }, //droite
+    { x: currentX - 1, y: currentY }  //gauche
     ]
 
-    for(let i=0; i<neighbors.length; i++){
+    for (let i = 0; i < neighbors.length; i++) {
       const neighbor = neighbors[i];
       const groundTile = groundLayer.getTileAt(neighbor.x, neighbor.y);
       const collisionTile = collisionsLayer.getTileAt(neighbor.x, neighbor.y);
 
-      if(!groundTile){
+      if (!groundTile) {
         continue;
       }
 
-      if(collisionTile !== null){
+      if (collisionTile !== null) {
         continue;
       }
 
       const neighborKey = coordsToKey(neighbor.x, neighbor.y);
 
-      if(neighborKey in parentForKey){
+      if (neighborKey in parentForKey) {
         continue;
       }
 
-      parentForKey[neighborKey] = {key: currentKey, position: {x: currentX, y: currentY}};
-      
+      parentForKey[neighborKey] = { key: currentKey, position: { x: currentX, y: currentY } };
+
       queue.push(neighbor);
 
-      if(neighborKey === targetKey){
+      if (neighborKey === targetKey) {
         break;
       }
     }
@@ -262,16 +273,16 @@ function findPathTo(start, target, groundLayer, collisionsLayer){
   var path = [];
   var currentPos;
   var currentKey;
-  
-  if(!parentForKey[targetKey]){
-    return [];   
+
+  if (!parentForKey[targetKey]) {
+    return [];
   }
 
   path.push(target);
   currentKey = targetKey;
   currentPos = parentForKey[targetKey].position;
 
-  while(currentKey !== startKey){
+  while (currentKey !== startKey) {
 
     path.push(currentPos);
 
@@ -283,11 +294,11 @@ function findPathTo(start, target, groundLayer, collisionsLayer){
   return path.reverse();
 }
 
-function getNextTileInPath(path){
-  if(!path || path.length === 0){
+function getNextTileInPath(path) {
+  if (!path || path.length === 0) {
     return;
   }
-  
+
   return path.shift();
 }
 
