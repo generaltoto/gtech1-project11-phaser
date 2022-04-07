@@ -25,10 +25,14 @@ function preload() {
   //preloading assets
   this.load.image('ground', 'Assets/allassets.png');
   this.load.tilemapTiledJSON('map', 'Assets/map.json');
+  this.load.audio('ambiance', 'Assets/Melodie_Projet_jeu.mp3')
   this.load.image('player', 'Assets/fantome_dirdb.png')
 }
 
 function create() {
+  //Audio
+  this.ambiance = this.sound.add("ambiance")
+  this.ambiance.play();
 
   //Coordinate
   this.text = this.add.text(10, 10, 'Cursors to move', { font: '16px Courier', fill: '#00ff00' }).setScrollFactor(0);
@@ -149,15 +153,7 @@ function update() {
   ]);
 
   //EVENT QUAND ON ARRIVE FIN NIVEAU
-  if (coordsPlayerInMap.x == 18, coordsPlayerInMap.y == 10) {
-    console.log("yes");
-  }
-
-  if (coordsPlayerInMap.x == 19, coordsPlayerInMap.y == 10) {
-    console.log("yes");
-  }
-
-  if (coordsPlayerInMap.x == 20, coordsPlayerInMap.y == 10) {
+  if (coordsPlayerInMap.x == 18, coordsPlayerInMap.y == 10 || coordsPlayerInMap.x == 19, coordsPlayerInMap.y == 10 || coordsPlayerInMap.x == 20, coordsPlayerInMap.y == 10) {
     console.log("yes");
   }
 }
