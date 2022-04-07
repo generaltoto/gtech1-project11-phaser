@@ -25,6 +25,20 @@ var focusedTile = null;
 var playerChangedLevel = false;
 var aPopupisOpen = false;
 
+/*OPEN DOOR*/
+
+function openDoors(level) {
+  var Part1 = level.layer2.findByIndex(31);
+  var Part2 = level.layer2.findByIndex(33);
+  var Part3 = level.layer3.findByIndex(34);
+  var Part4 = level.layer3.findByIndex(32);
+  console.log(Part1)
+  level.layer2.putTileAt(-1, Part1.x, Part1.y)
+  level.layer2.putTileAt(-1, Part2.x, Part2.y)
+  level.layer3.putTileAt(-1, Part3.x, Part3.y)
+  level.layer3.putTileAt(-1, Part4.x, Part4.y)
+}
+
 /* UPDATING CANVA COORDINATES TO MAP COORDINATES*/
 
 function worldToMap(x, y, layer) {
@@ -209,14 +223,17 @@ function changeSprite(tile, nextTileInPath) {
 
 function preload() {
   this.load.image('ground', 'Assets/allassets.png');
-  this.load.tilemapTiledJSON('map', 'Assets/map.json');
+  this.load.image('carousel1', 'Assets/carousel.png');
+  this.load.image('bigwheel1', 'Assets/bigwheel.png');
+  this.load.image('rollercoaster1', 'Assets/rollercoaster.png');
+  this.load.tilemapTiledJSON('map', 'Assets/finalmap.json');
 
   this.load.image('playerDroiteBas', 'Assets/fantome_dirdb.png')
   this.load.image('playerDroiteHaut', 'Assets/fantome_dirdh.png')
   this.load.image('playerGaucheBas', 'Assets/fantome_dirgb.png')
   this.load.image('playerGaucheHaut', 'Assets/fantome_dirgh.png')
   this.load.audio('ambiance', 'Assets/Melodie_Projet_jeu.mp3')
-  this.load.image('logo', 'Assets/allassets.png')
+  this.load.image('logo', 'Assets/task.png')
   this.load.image('button', 'Assets/POPUP.png')
 }
 
@@ -225,10 +242,12 @@ function create() {
 
   //Coordinate
   this.text = this.add.text(10, 10, 'Cursors to move', { font: '16px Courier', fill: '#00ff00' }).setScrollFactor(0);
+  const screenCenterX = this.cameras.main.worldView.x + this.cameras.main.width / 2;
+  const screenCenterY = this.cameras.main.worldView.y + this.cameras.main.height / 2;
 
   /* MAP */
 
-  let map = this.add.tilemap('map')
+  let map = this.add.tilemap('map');
   var tileset1 = map.addTilesetImage('allassets', 'ground');
   this.layer1 = map.createLayer('Groupe 1/layer1', [tileset1]);
   this.layer2 = map.createLayer('Groupe 1/layer2', [tileset1]);
@@ -237,7 +256,7 @@ function create() {
   this.layer5 = map.createLayer('Groupe 1/layer5', [tileset1]);
 
   //SPAWNING PLAYER
-  let playerPos = mapToWorld(14, 21, this.layer1.layer)
+  let playerPos = mapToWorld(110, 115, this.layer1.layer)
   player = this.physics.add.sprite(playerPos.x, playerPos.y, 'playerDroiteHaut')
 
   //CURSOR
@@ -256,15 +275,15 @@ function create() {
 
   /* CAMERA */
   this.cameras.main.startFollow(player, true);
-  this.cameras.main.setZoom(2);
+  // this.cameras.main.setZoom(2);
 
-  //popup
+  //popup level 1
   this.popup1 = { bg: null, closeButton: null, action: null }
-  this.clickButton = this.add.sprite(1020, 350, 'button')
+  this.clickButton = this.add.sprite(270, 1750, 'button')
     .setInteractive()
     .on('pointerdown', () => managePopup(this.popup1));
 
-  this.popup1.bg = this.add.sprite(600, 300, "logo");
+  this.popup1.bg = this.add.sprite(400, 1780, "logo");
   this.popup1.bg.alpha = 0;
 
   this.popup1.closeButton = this.add.sprite(this.popup1.bg.x + this.popup1.bg.width / 2, this.popup1.bg.y - this.popup1.bg.height / 2, 'button')
@@ -275,7 +294,7 @@ function create() {
   this.popup1.action = this.add.sprite(this.popup1.bg.x, this.popup1.bg.y, "player")
     .setInteractive()
     .on('pointerdown', () => {
-      this.layer2.putTileAt(-1, 6, 6)
+      openDoors(this);
       managePopup(this.popup1);
     })
   this.popup1.action.alpha = 0;
@@ -292,6 +311,9 @@ function create() {
 
 
 function update() {
+
+  screenCenterX = this.cameras.main.worldView.x + this.cameras.main.width / 2;
+  screenCenterY = this.cameras.main.worldView.y + this.cameras.main.height / 2;
 
   this.text.setText([
     'screen x: ' + this.input.x,
@@ -321,9 +343,6 @@ function update() {
   if (this.MousePointer.isDown && !this.playerIsMoving && !aPopupisOpen) {
     coordsPointerInMap = worldToMap(this.MousePointer.worldX, this.MousePointer.worldY, this.layer1.layer);
     coordsPlayerInMap = worldToMap(player.x, player.y + player.height / 2, this.layer1.layer);
-    if (focusedTile && this.layer1.getTileAt(coordsPointerInMap.x, coordsPointerInMap.y).index != 0) {
-      focusedTile.setVisible(true);
-    }
     this.playerIsMoving = true;
     this.path = findPathTo(coordsPlayerInMap, coordsPointerInMap, this.layer1, this.layer2);
     if (this.path.length > 0) {
@@ -377,11 +396,10 @@ function update() {
       }
     }
   }
-  console.log(coordsPlayerInMap)
 
   /* PLAYER ARRIVED AT THE END OF THE FIRST MAP */
 
-  if (coordsPlayerInMap.x == 14, coordsPlayerInMap.y == 6 || coordsPlayerInMap.x == 15, coordsPlayerInMap.y == 6 || coordsPlayerInMap.x == 16, coordsPlayerInMap.y == 6 && playerChangedLevel == false) {
+  if (coordsPlayerInMap.x == 110, coordsPlayerInMap.y == 102 || coordsPlayerInMap.x == 111, coordsPlayerInMap.y == 102 || coordsPlayerInMap.x == 112, coordsPlayerInMap.y == 102 && playerChangedLevel == false) {
     this.cameras.main.fadeOut(1250);
     this.cameras.main.fadeIn(1250);
     let map = this.add.tilemap('map')
@@ -390,12 +408,79 @@ function update() {
     this.layer3.destroy()
     this.layer4.destroy()
     this.layer5.destroy()
-    this.layer1 = map.createLayer('Groupe2/layer1', [tileset1]);
-    this.layer2 = map.createLayer('Groupe2/layer2', [tileset1]);
-    let playerPos = mapToWorld(21, 21, this.layer1.layer);
+    this.layer1 = map.createLayer('Groupe 2/layer1', [tileset1]);
+    this.layer2 = map.createLayer('Groupe 2/layer2', [tileset1]);
+    this.layer3 = map.createLayer('Groupe 2/layer3', [tileset1]);
+    this.layer4 = map.createLayer('Groupe 2/layer4', [tileset1]);
+    let playerPos = mapToWorld(114, 117, this.layer1.layer);
     player.x = playerPos.x;
     player.y = playerPos.y;
+    player.setDepth(player.z = 1)
+    this.layer2.setDepth(this.layer2.z = 2)
+    this.layer3.setDepth(this.layer3.z = 3)
+    this.layer4.setDepth(this.layer4.z = 4)
+
+    popup 1 level 2
+    this.popup2 = { bg: null, closeButton: null, action: null }
+    this.clickButton = this.add.sprite(-50, 1500, 'button')
+      .setInteractive()
+      .on('pointerdown', () => managePopup(this.popup2));
+    console.log()
+
+    this.popup3 = { bg: null, closeButton: null, action: null }
+    this.clickButton = this.add.sprite(-130, 1350, 'button')
+      .setInteractive()
+      .on('pointerdown', () => managePopup(this.popup2));
+    console.log()
+
+    this.popup4 = { bg: null, closeButton: null, action: null }
+    this.clickButton = this.add.sprite(-50, 1500, 'button')
+      .setInteractive()
+      .on('pointerdown', () => managePopup(this.popup2));
+    console.log()
+
+    this.popup2.bg = this.add.sprite(-130, 1500, "logo");
+    this.popup2.bg.setDepth(this.popup2.bg.z = 10)
+    this.popup2.bg.alpha = 0;
+
+    this.popup3.bg = this.add.sprite(-130, 1350, "logo");
+    this.popup3.bg.setDepth(this.popup2.bg.z = 10)
+    this.popup3.bg.alpha = 0;
+
+    this.popup4.bg = this.add.sprite(-130, 1540, "logo");
+    this.popup4.bg.setDepth(this.popup2.bg.z = 10)
+    this.popup4.bg.alpha = 0;
+
+    this.popup2.closeButton = this.add.sprite(this.popup2.bg.x + this.popup2.bg.width / 2, this.popup2.bg.y - this.popup2.bg.height / 2, 'button')
+      .setInteractive()
+      .on('pointerdown', () => managePopup(this.popup2));
+    this.popup2.closeButton.alpha = 0;
+
+    this.popup2.action = this.add.sprite(this.popup2.bg.x, this.popup2.bg.y, "player")
+      .setInteractive()
+      .on('pointerdown', () => {
+        openDoors(this);
+        managePopup(this.popup2);
+      })
+    this.popup2.action.alpha = 0;
+    this.popup1.action.setActive(false);
     this.playerIsMoving = false;
     playerChangedLevel = true;
+    this.nextTileInPath = null;
+  }
+
+
+  // Horizontal movement
+  if (cursors.left.isDown) {
+    player.body.setVelocityX(-100);
+  } else if (cursors.right.isDown) {
+    player.body.setVelocityX(100);
+  }
+
+  // Vertical movement
+  if (cursors.up.isDown) {
+    player.body.setVelocityY(-100);
+  } else if (cursors.down.isDown) {
+    player.body.setVelocityY(100);
   }
 }
