@@ -27,6 +27,7 @@ function preload() {
   this.load.tilemapTiledJSON('map', 'Assets/map.json');
   this.load.audio('ambiance', 'Assets/Melodie_Projet_jeu.mp3')
   this.load.image('player', 'Assets/fantome_dirdb.png')
+  this.load.tilemapTiledJSON('map2', 'Assets/untitled.json');
 }
 
 function create() {
@@ -40,11 +41,11 @@ function create() {
   /* MAP */
   let map = this.add.tilemap('map')
   var tileset1 = map.addTilesetImage('allassets', 'ground');
-  this.layer1 = map.createLayer('layer1', [tileset1]);
-  this.layer2 = map.createLayer('layer2', [tileset1]);
-  this.layer3 = map.createLayer('layer3', [tileset1]);
-  this.layer4 = map.createLayer('layer4', [tileset1]);
-  this.layer5 = map.createLayer('layer5', [tileset1]);
+  this.layer1 = map.createLayer('Group 1/layer1', [tileset1]);
+  this.layer2 = map.createLayer('Group 1/layer2', [tileset1]);
+  this.layer3 = map.createLayer('Group 1/layer3', [tileset1]);
+  this.layer4 = map.createLayer('Group 1/layer4', [tileset1]);
+  this.layer5 = map.createLayer('Group 1/layer5', [tileset1]);
 
 
   /* PLAYER & POINTER */
@@ -86,9 +87,9 @@ function update() {
   if (focusedTile) {
     focusedTile.setVisible(true);
   }
-  if (coordsPointerInMap.x >= 0 && coordsPointerInMap.y >= 0 && coordsPointerInMap.x < this.layer1.layer.width && coordsPointerInMap.y < this.layer1.layer.height) {
+  if(coordsPointerInMap.x >= 0 && coordsPointerInMap.y >= 0 && coordsPointerInMap.x < this.layer1.layer.width && coordsPointerInMap.y < this.layer1.layer.height){
     focusedTile = this.layer1.getTileAt(coordsPointerInMap.x, coordsPointerInMap.y);
-    focusedTile.setVisible(false);
+    if (focusedTile && this.layer1.getTileAt(coordsPointerInMap.x, coordsPointerInMap.y).index != 0) { focusedTile.setVisible(false); }
   }
 
   var coordsPlayerInMap = worldToMap(this.player.x, this.player.y + this.player.height / 2, this.layer1.layer);
@@ -155,6 +156,11 @@ function update() {
   //EVENT QUAND ON ARRIVE FIN NIVEAU
   if (coordsPlayerInMap.x == 18, coordsPlayerInMap.y == 10 || coordsPlayerInMap.x == 19, coordsPlayerInMap.y == 10 || coordsPlayerInMap.x == 20, coordsPlayerInMap.y == 10) {
     console.log("yes");
+    let map = this.add.tilemap('map')
+    var tileset1 = map.addTilesetImage('allassets', 'ground');
+    this.layer2test = map.createLayer('Group 2/layer2test', [tileset1]);
+    this.layer1.destroy()
+    this.layer1 = map.createLayer('Group 2/layer1', [tileset1]);
   }
 }
 
