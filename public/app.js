@@ -38,6 +38,25 @@ function worldToMap(x, y, layer) {
   return cell;
 }
 
+/* FUNCTION POPUP FOR RIDDLE*/
+
+function managePopup(popup) {
+  //popup fonction
+  if (popup.isOpen != true) {
+    popup.isOpen = true;
+    popup.bg.alpha = 1;
+    popup.closeButton.alpha = 1;
+    popup.action.alpha = 1;
+    popup.action.setActive(true);
+    return;
+  }
+  popup.bg.alpha = 0;
+  popup.closeButton.alpha = 0;
+  popup.isOpen = false;
+  popup.action.alpha = 0;
+  popup.action.setActive(false);
+}
+
 /* UPDATING MAP COORDINATES TO CANVA COORDINATES*/
 
 function mapToWorld(x, y, layer) {
@@ -58,7 +77,7 @@ function worldToMap(x, y, layer) {
   var cell = { x: 0, y: 0 };
 
   var x_pos = (x - 16 - layer.x) / layer.baseTileWidth;
-  var y_pos = (y - 24 - layer.y) / layer.baseTileHeight;
+  var y_pos = (y - 8 - layer.y) / layer.baseTileHeight;
 
   cell.y = Math.round(y_pos - x_pos);
   cell.x = Math.round(x_pos + y_pos);
@@ -201,6 +220,9 @@ function preload() {
 
 function create() {
 
+  //Coordinate
+  this.text = this.add.text(10, 10, 'Cursors to move', { font: '16px Courier', fill: '#00ff00' }).setScrollFactor(0);
+
   /* MAP */
 
   let map = this.add.tilemap('map')
@@ -228,10 +250,20 @@ function create() {
   this.ambiance = this.sound.add("ambiance")
   this.ambiance.loop = true;
   this.ambiance.play();
+
+  this.cameras.main.startFollow(player, true);
+  this.cameras.main.setZoom(2);
 }
 
 
 function update() {
+
+  this.text.setText([
+    'screen x: ' + this.input.x,
+    'screen y: ' + this.input.y,
+    'world x: ' + this.input.mousePointer.worldX,
+    'world y: ' + this.input.mousePointer.worldY
+  ]);
 
   /* FAKE HEIGHT ON MAP */
 
@@ -247,7 +279,7 @@ function update() {
   player.body.setVelocity(0); // Stop any previous movement from the last frame
 
   //GETING CLICK
-  var coordsPointerInMap = worldToMap(this.MousePointer.x, this.MousePointer.y, this.layer1.layer);
+  var coordsPointerInMap = worldToMap(this.MousePointer.worldX, this.MousePointer.worldY, this.layer1.layer);
   var coordsPlayerInMap = worldToMap(player.x, player.y + player.height / 2, this.layer1.layer);
   if (focusedTile) {
     focusedTile.setVisible(true);
@@ -261,7 +293,7 @@ function update() {
 
   //STARTING PATHFINDING ON CLICK
   if (this.MousePointer.isDown && !this.playerIsMoving) {
-    coordsPointerInMap = worldToMap(this.MousePointer.x, this.MousePointer.y, this.layer1.layer);
+    coordsPointerInMap = worldToMap(this.MousePointer.worldX, this.MousePointer.worldY, this.layer1.layer);
     coordsPlayerInMap = worldToMap(player.x, player.y + player.height / 2, this.layer1.layer);
     if (focusedTile && this.layer1.getTileAt(coordsPointerInMap.x, coordsPointerInMap.y).index != 0) {
       focusedTile.setVisible(true);
@@ -321,10 +353,10 @@ function update() {
   }
 
   /* PLAYER ARRIVED AT THE END OF THE FIRST MAP */
-  if (coordsPlayerInMap.x == 18, coordsPlayerInMap.y == 10 || coordsPlayerInMap.x == 19, coordsPlayerInMap.y == 10 || coordsPlayerInMap.x == 20, coordsPlayerInMap.y == 10 && playerChangedLevel == false) {
+  console.log(coordsPlayerInMap)
+  if (coordsPlayerInMap.x == 19, coordsPlayerInMap.y == 11 || coordsPlayerInMap.x == 20, coordsPlayerInMap.y == 11 || coordsPlayerInMap.x == 21, coordsPlayerInMap.y == 11 && playerChangedLevel == false) {
     this.cameras.main.fadeOut(1250);
     this.cameras.main.fadeIn(1250);
-    console.log("yes")
     let map = this.add.tilemap('map')
     var tileset1 = map.addTilesetImage('allassets', 'ground');
     this.layer2.destroy()
