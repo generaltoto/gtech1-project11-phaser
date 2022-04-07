@@ -25,6 +25,19 @@ var focusedTile = null;
 var playerChangedLevel = false;
 var aPopupisOpen = false;
 
+/*OPEN DOOR*/
+
+function openDoors(level) {
+  var Part1 = level.layer2.findByIndex(31);
+  var Part2 = level.layer2.findByIndex(33);
+  var Part3 = level.layer3.findByIndex(34);
+  var Part4 = level.layer3.findByIndex(32);
+  level.layer2.putTileAt(-1, Part1.x, Part1.y)
+  level.layer2.putTileAt(-1, Part2.x, Part2.y)
+  level.layer3.putTileAt(-1, Part3.x, Part3.y)
+  level.layer3.putTileAt(-1, Part4.x, Part4.y)
+}
+
 /* UPDATING CANVA COORDINATES TO MAP COORDINATES*/
 
 function worldToMap(x, y, layer) {
@@ -216,7 +229,7 @@ function preload() {
   this.load.image('playerGaucheBas', 'Assets/fantome_dirgb.png')
   this.load.image('playerGaucheHaut', 'Assets/fantome_dirgh.png')
   this.load.audio('ambiance', 'Assets/Melodie_Projet_jeu.mp3')
-  this.load.image('logo', 'Assets/allassets.png')
+  this.load.image('logo', 'Assets/task.png')
   this.load.image('button', 'Assets/POPUP.png')
 }
 
@@ -260,11 +273,11 @@ function create() {
 
   //popup
   this.popup1 = { bg: null, closeButton: null, action: null }
-  this.clickButton = this.add.sprite(1020, 350, 'button')
+  this.clickButton = this.add.sprite(270, 220, 'button')
     .setInteractive()
     .on('pointerdown', () => managePopup(this.popup1));
 
-  this.popup1.bg = this.add.sprite(600, 300, "logo");
+  this.popup1.bg = this.add.sprite(420, 240, "logo");
   this.popup1.bg.alpha = 0;
 
   this.popup1.closeButton = this.add.sprite(this.popup1.bg.x + this.popup1.bg.width / 2, this.popup1.bg.y - this.popup1.bg.height / 2, 'button')
@@ -275,7 +288,7 @@ function create() {
   this.popup1.action = this.add.sprite(this.popup1.bg.x, this.popup1.bg.y, "player")
     .setInteractive()
     .on('pointerdown', () => {
-      this.layer2.putTileAt(-1, 6, 6)
+      openDoors(this);
       managePopup(this.popup1);
     })
   this.popup1.action.alpha = 0;
@@ -321,9 +334,6 @@ function update() {
   if (this.MousePointer.isDown && !this.playerIsMoving && !aPopupisOpen) {
     coordsPointerInMap = worldToMap(this.MousePointer.worldX, this.MousePointer.worldY, this.layer1.layer);
     coordsPlayerInMap = worldToMap(player.x, player.y + player.height / 2, this.layer1.layer);
-    if (focusedTile && this.layer1.getTileAt(coordsPointerInMap.x, coordsPointerInMap.y).index != 0) {
-      focusedTile.setVisible(true);
-    }
     this.playerIsMoving = true;
     this.path = findPathTo(coordsPlayerInMap, coordsPointerInMap, this.layer1, this.layer2);
     if (this.path.length > 0) {
@@ -377,7 +387,6 @@ function update() {
       }
     }
   }
-  console.log(coordsPlayerInMap)
 
   /* PLAYER ARRIVED AT THE END OF THE FIRST MAP */
 
@@ -397,5 +406,6 @@ function update() {
     player.y = playerPos.y;
     this.playerIsMoving = false;
     playerChangedLevel = true;
+    this.nextTileInPath = null;
   }
 }
