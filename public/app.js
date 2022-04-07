@@ -22,6 +22,7 @@ var cursors, player
 var tileSize = 64;
 let mapHeight = 6
 var focusedTile = null;
+var playerChangedLevel = false;
 
 /* UPDATING CANVA COORDINATES TO MAP COORDINATES*/
 
@@ -174,7 +175,6 @@ function getNextTileInPath(path) {
 }
 
 function changeSprite(tile, nextTileInPath) {
-  console.log(tile, nextTileInPath)
   if (tile.x > nextTileInPath.x) {
     player.setTexture('playerDroiteBas')
   } else if (tile.x < nextTileInPath.x) {
@@ -321,8 +321,10 @@ function update() {
   }
 
   /* PLAYER ARRIVED AT THE END OF THE FIRST MAP */
-  if (coordsPlayerInMap.x == 18, coordsPlayerInMap.y == 10 || coordsPlayerInMap.x == 19, coordsPlayerInMap.y == 10 || coordsPlayerInMap.x == 20, coordsPlayerInMap.y == 10) {
-    console.log("yes");
+  if (coordsPlayerInMap.x == 18, coordsPlayerInMap.y == 10 || coordsPlayerInMap.x == 19, coordsPlayerInMap.y == 10 || coordsPlayerInMap.x == 20, coordsPlayerInMap.y == 10 && playerChangedLevel == false) {
+    this.cameras.main.fadeOut(1250);
+    this.cameras.main.fadeIn(1250);
+    console.log("yes")
     let map = this.add.tilemap('map')
     var tileset1 = map.addTilesetImage('allassets', 'ground');
     this.layer2.destroy()
@@ -331,6 +333,6 @@ function update() {
     this.layer5.destroy()
     this.layer1 = map.createLayer('Group 2/layer1', [tileset1]);
     this.layer2 = map.createLayer('Group 2/layer2', [tileset1]);
-    camera.fadeOut(3000);
+    playerChangedLevel = true;
   }
 }
