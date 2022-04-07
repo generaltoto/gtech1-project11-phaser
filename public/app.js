@@ -33,6 +33,7 @@ function preload() {
 function create() {
   //Audio
   this.ambiance = this.sound.add("ambiance")
+  this.ambiance.loop = true;
   this.ambiance.play();
 
   //Coordinate
@@ -158,9 +159,12 @@ function update() {
     console.log("yes");
     let map = this.add.tilemap('map')
     var tileset1 = map.addTilesetImage('allassets', 'ground');
-    this.layer2test = map.createLayer('Group 2/layer2test', [tileset1]);
-    this.layer1.destroy()
+    this.layer2.destroy()
+    this.layer3.destroy()
+    this.layer4.destroy()
+    this.layer5.destroy()
     this.layer1 = map.createLayer('Group 2/layer1', [tileset1]);
+    this.layer2 = map.createLayer('Group 2/layer2', [tileset1]);  
   }
 }
 
