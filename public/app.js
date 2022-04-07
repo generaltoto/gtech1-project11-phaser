@@ -37,6 +37,7 @@ function openDoors(level) {
   level.layer2.putTileAt(-1, Part2.x, Part2.y)
   level.layer3.putTileAt(-1, Part3.x, Part3.y)
   level.layer3.putTileAt(-1, Part4.x, Part4.y)
+  level.counterClicked = 0;
 }
 
 /* UPDATING CANVA COORDINATES TO MAP COORDINATES*/
@@ -55,12 +56,12 @@ function worldToMap(x, y, layer) {
 
 /* FUNCTION FOR POPUP*/
 
-function initiatePopup(level, popup, x, y){
+function initiatePopup(level, popup, x, y) {
   level.add.sprite(x, y, 'button')
     .setInteractive()
     .on('pointerdown', () => managePopup(popup));
 
-  popup.bg = level.add.sprite(x, y, "logo");
+  popup.bg = level.add.sprite(x, y, "task");
   popup.bg.alpha = 0;
 
   popup.closeButton = level.add.sprite(popup.bg.x + popup.bg.width / 2, popup.bg.y - popup.bg.height / 2, 'closebutton')
@@ -68,7 +69,7 @@ function initiatePopup(level, popup, x, y){
     .on('pointerdown', () => managePopup(popup));
   popup.closeButton.alpha = 0;
 
-  popup.action = level.add.sprite(popup.bg.x, popup.bg.y, "player")
+  popup.action = level.add.sprite(popup.bg.x, popup.bg.y, "button")
   popup.action.alpha = 0;
   popup.action.setActive(false);
 
@@ -222,7 +223,7 @@ function findPathTo(start, target, groundLayer, collisionsLayer) {
   return path.reverse();
 }
 
-/* MOVING PLAYER ON PATH */
+/* MOVING w ON PATH */
 
 function getNextTileInPath(path) {
   if (!path || path.length === 0) {
@@ -254,7 +255,8 @@ function preload() {
   this.load.image('playerGaucheBas', 'Assets/fantome_dirgb.png')
   this.load.image('playerGaucheHaut', 'Assets/fantome_dirgh.png')
   this.load.audio('ambiance', 'Assets/Lost_Memories.mp3')
-  this.load.image('logo', 'Assets/task.png')
+  this.load.audio('audiotask', 'Assets/complete_task.mp3')
+  this.load.image('task', 'Assets/task.png')
   this.load.image('button', 'Assets/POPUP.png')
   this.load.image('closebutton', 'Assets/redcross.png')
 }
@@ -304,9 +306,12 @@ function create() {
   initiatePopup(this, this.popup1, 270, 1750);
   this.popup1.action.setInteractive()
     .on('pointerdown', () => {
+      this.task = this.sound.add("audiotask");
+      this.task.play();
       openDoors(this);
       managePopup(this.popup1);
     })
+
   //var for level 2
   this.counterClicked = 0;
 
@@ -411,7 +416,7 @@ function update() {
   /* PLAYER ARRIVED AT THE END OF THE FIRST MAP */
 
   if (coordsPlayerInMap.x == 108 && coordsPlayerInMap.y == 100 || coordsPlayerInMap.x == 109 && coordsPlayerInMap.y == 100 || coordsPlayerInMap.x == 110 && coordsPlayerInMap.y == 100 && playerChangedLevel == false) {
-    
+
     //load new map
     this.cameras.main.fadeOut(1500);
     this.cameras.main.fadeIn(1500);
@@ -425,7 +430,7 @@ function update() {
     this.layer2 = map.createLayer('Groupe 2/layer2', [tileset1]);
     this.layer3 = map.createLayer('Groupe 2/layer3', [tileset1]);
     this.layer4 = map.createLayer('Groupe 2/layer4', [tileset1]);
-    
+
     //reset pos
     let playerPos = mapToWorld(114, 117, this.layer1.layer);
     player.x = playerPos.x;
@@ -445,42 +450,48 @@ function update() {
     initiatePopup(this, this.popup2, -50, 1500)
     this.popup2.alreadyBeenClicked = false;
     this.popup2.action.setInteractive()
-    .on('pointerdown', () => {
-      if(!this.popup2.alreadyBeenClicked){
-        this.counterClicked++;
-        this.popup2.alreadyBeenClicked = true;
-        managePopup(this.popup2)
-      }
-    })
+      .on('pointerdown', () => {
+        this.task = this.sound.add("audiotask");
+        this.task.play();
+        if (!this.popup2.alreadyBeenClicked) {
+          this.counterClicked++;
+          this.popup2.alreadyBeenClicked = true;
+          managePopup(this.popup2)
+        }
+      })
 
     //second popup
     this.popup3 = { bg: null, closeButton: null, action: null }
     initiatePopup(this, this.popup3, -130, 1350)
     this.popup3.alreadyBeenClicked = false;
     this.popup3.action.setInteractive().
-    on('pointerdown', () => {
-      if(!this.popup3.alreadyBeenClicked){
-        this.counterClicked++;
-        this.popup3.alreadyBeenClicked = true;
-        managePopup(this.popup3)
-      }
-    })
-    
+      on('pointerdown', () => {
+        this.task = this.sound.add("audiotask");
+        this.task.play();
+        if (!this.popup3.alreadyBeenClicked) {
+          this.counterClicked++;
+          this.popup3.alreadyBeenClicked = true;
+          managePopup(this.popup3)
+        }
+      })
+
     //third popup
     this.popup4 = { bg: null, closeButton: null, action: null }
     initiatePopup(this, this.popup4, 1025, 1365)
     this.popup4.alreadyBeenClicked = false;
     this.popup4.action.setInteractive()
-    .on('pointerdown', () => {
-      if(!this.popup4.alreadyBeenClicked){
-        this.counterClicked++;
-        this.popup4.alreadyBeenClicked = true;
-        managePopup(this.popup4)
-      }
-    })
+      .on('pointerdown', () => {
+        this.task = this.sound.add("audiotask");
+        this.task.play();
+        if (!this.popup4.alreadyBeenClicked) {
+          this.counterClicked++;
+          this.popup4.alreadyBeenClicked = true;
+          managePopup(this.popup4)
+        }
+      })
   }
 
-  if(this.counterClicked === 3){
+  if (this.counterClicked === 3) {
     openDoors(this)
   }
 
