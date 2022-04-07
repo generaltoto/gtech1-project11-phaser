@@ -222,7 +222,10 @@ function changeSprite(tile, nextTileInPath) {
 
 function preload() {
   this.load.image('ground', 'Assets/allassets.png');
-  this.load.tilemapTiledJSON('map', 'Assets/map.json');
+  this.load.image('carousel1', 'Assets/carousel.png');
+  this.load.image('bigwheel1', 'Assets/bigwheel.png');
+  this.load.image('rollercoaster1', 'Assets/rollercoaster.png');
+  this.load.tilemapTiledJSON('map', 'Assets/finalmap.json');
 
   this.load.image('playerDroiteBas', 'Assets/fantome_dirdb.png')
   this.load.image('playerDroiteHaut', 'Assets/fantome_dirdh.png')
@@ -243,6 +246,9 @@ function create() {
 
   let map = this.add.tilemap('map')
   var tileset1 = map.addTilesetImage('allassets', 'ground');
+  var tileset2 = map.addTilesetImage('carousel', 'carousel1');
+  var tileset3 = map.addTilesetImage('bigwheel', 'bigwheel1');
+  var tileset4 = map.addTilesetImage('rollercoaster', 'rollercoaster1');
   this.layer1 = map.createLayer('Groupe 1/layer1', [tileset1]);
   this.layer2 = map.createLayer('Groupe 1/layer2', [tileset1]);
   this.layer3 = map.createLayer('Groupe 1/layer3', [tileset1]);
@@ -268,8 +274,8 @@ function create() {
   this.ambiance.play();
 
   /* CAMERA */
-  this.cameras.main.startFollow(player, true);
-  this.cameras.main.setZoom(2);
+  // this.cameras.main.startFollow(player, true);
+  // this.cameras.main.setZoom(2);
 
   //popup
   this.popup1 = { bg: null, closeButton: null, action: null }
@@ -399,8 +405,8 @@ function update() {
     this.layer3.destroy()
     this.layer4.destroy()
     this.layer5.destroy()
-    this.layer1 = map.createLayer('Groupe2/layer1', [tileset1]);
-    this.layer2 = map.createLayer('Groupe2/layer2', [tileset1]);
+    this.layer1 = map.createLayer('Groupe 2/layer1', [tileset1]);
+    this.layer2 = map.createLayer('Groupe 2/layer2', [tileset1]);
     let playerPos = mapToWorld(21, 21, this.layer1.layer);
     player.x = playerPos.x;
     player.y = playerPos.y;
