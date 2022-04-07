@@ -97,17 +97,6 @@ function managePopup(popup) {
   popup.action.setActive(false);
 }
 
-/* UPDATING MAP COORDINATES TO CANVA COORDINATES*/
-
-function mapToWorld(x, y, layer) {
-  var pos = { x: 0, y: 0 };
-
-  pos.x = (x - y) * layer.baseTileWidth / 2 + 16 + layer.x;
-  pos.y = (x + y) * layer.baseTileHeight / 2 + 24 + layer.y;
-
-  return pos;
-}
-
 /* GETTING X AND Y COORDINATES AND CREATING KEYS*/
 
 var focusedTile = null;
@@ -117,7 +106,7 @@ function worldToMap(x, y, layer) {
   var cell = { x: 0, y: 0 };
 
   var x_pos = (x - 16 - layer.x) / layer.baseTileWidth;
-  var y_pos = (y - 8 - layer.y) / layer.baseTileHeight;
+  var y_pos = (y - 16 - layer.y) / layer.baseTileHeight;
 
   cell.y = Math.round(y_pos - x_pos);
   cell.x = Math.round(x_pos + y_pos);
@@ -129,7 +118,7 @@ function mapToWorld(x, y, layer) {
   var pos = { x: 0, y: 0 };
 
   pos.x = (x - y) * layer.baseTileWidth / 2 + 16 + layer.x;
-  pos.y = (x + y) * layer.baseTileHeight / 2 + 8 + layer.y;
+  pos.y = (x + y) * layer.baseTileHeight / 2 + 16 + layer.y;
 
   return pos;
 }
@@ -266,8 +255,6 @@ function create() {
 
   //Coordinate
   this.text = this.add.text(10, 10, 'Cursors to move', { font: '16px Courier', fill: '#00ff00' }).setScrollFactor(0);
-  const screenCenterX = this.cameras.main.worldView.x + this.cameras.main.width / 2;
-  const screenCenterY = this.cameras.main.worldView.y + this.cameras.main.height / 2;
 
   /* MAP */
 
@@ -326,9 +313,6 @@ function create() {
 
 
 function update() {
-
-  screenCenterX = this.cameras.main.worldView.x + this.cameras.main.width / 2;
-  screenCenterY = this.cameras.main.worldView.y + this.cameras.main.height / 2;
 
   this.text.setText([
     'screen x: ' + this.input.x,
@@ -413,6 +397,8 @@ function update() {
     }
   }
 
+  console.log(coordsPlayerInMap)
+
   /* PLAYER ARRIVED AT THE END OF THE FIRST MAP */
 
   if (coordsPlayerInMap.x == 108 && coordsPlayerInMap.y == 100 || coordsPlayerInMap.x == 109 && coordsPlayerInMap.y == 100 || coordsPlayerInMap.x == 110 && coordsPlayerInMap.y == 100 && playerChangedLevel == false) {
@@ -440,7 +426,8 @@ function update() {
     this.nextTileInPath = null;
 
     //set layers depth again
-    this.layer2.setDepth(this.layer2.z = 2)
+    player.setDepth(player.z = 1)
+    this.layer2.setDepth(this.layer2.z = 0)
     this.layer3.setDepth(this.layer3.z = 2)
     this.layer4.setDepth(this.layer4.z = 2)
 
@@ -493,20 +480,5 @@ function update() {
 
   if (this.counterClicked === 3) {
     openDoors(this)
-  }
-
-
-  // Horizontal movement
-  if (cursors.left.isDown) {
-    player.body.setVelocityX(-100);
-  } else if (cursors.right.isDown) {
-    player.body.setVelocityX(100);
-  }
-
-  // Vertical movement
-  if (cursors.up.isDown) {
-    player.body.setVelocityY(-100);
-  } else if (cursors.down.isDown) {
-    player.body.setVelocityY(100);
   }
 }
