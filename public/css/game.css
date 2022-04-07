@@ -6,6 +6,7 @@ body{
   background-color: grey;
 }
 
-canvas{
+.center {
   text-align: center;
+  margin-top: 2vh;
 }
