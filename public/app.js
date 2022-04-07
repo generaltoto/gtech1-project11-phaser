@@ -23,6 +23,7 @@ var tileSize = 64;
 let mapHeight = 6
 var focusedTile = null;
 var playerChangedLevel = false;
+var aPopupisOpen = false;
 
 /* UPDATING CANVA COORDINATES TO MAP COORDINATES*/
 
@@ -36,6 +37,25 @@ function worldToMap(x, y, layer) {
   cell.x = Math.round(x_pos + y_pos);
 
   return cell;
+}
+
+/* FUNCTION POPUP FOR RIDDLE*/
+
+function managePopup(popup) {
+  //popup fonction
+  if (aPopupisOpen != true) {
+    aPopupisOpen = true;
+    popup.bg.alpha = 1;
+    popup.closeButton.alpha = 1;
+    popup.action.alpha = 1;
+    popup.action.setActive(true);
+    return;
+  }
+  popup.bg.alpha = 0;
+  popup.closeButton.alpha = 0;
+  aPopupisOpen = false;
+  popup.action.alpha = 0;
+  popup.action.setActive(false);
 }
 
 /* UPDATING MAP COORDINATES TO CANVA COORDINATES*/
@@ -58,7 +78,7 @@ function worldToMap(x, y, layer) {
   var cell = { x: 0, y: 0 };
 
   var x_pos = (x - 16 - layer.x) / layer.baseTileWidth;
-  var y_pos = (y - 24 - layer.y) / layer.baseTileHeight;
+  var y_pos = (y - 8 - layer.y) / layer.baseTileHeight;
 
   cell.y = Math.round(y_pos - x_pos);
   cell.x = Math.round(x_pos + y_pos);
@@ -196,23 +216,28 @@ function preload() {
   this.load.image('playerGaucheBas', 'Assets/fantome_dirgb.png')
   this.load.image('playerGaucheHaut', 'Assets/fantome_dirgh.png')
   this.load.audio('ambiance', 'Assets/Melodie_Projet_jeu.mp3')
+  this.load.image('logo', 'Assets/allassets.png')
+  this.load.image('button', 'Assets/POPUP.png')
 }
 
 
 function create() {
 
+  //Coordinate
+  this.text = this.add.text(10, 10, 'Cursors to move', { font: '16px Courier', fill: '#00ff00' }).setScrollFactor(0);
+
   /* MAP */
 
   let map = this.add.tilemap('map')
   var tileset1 = map.addTilesetImage('allassets', 'ground');
-  this.layer1 = map.createLayer('Group 1/layer1', [tileset1]);
-  this.layer2 = map.createLayer('Group 1/layer2', [tileset1]);
-  this.layer3 = map.createLayer('Group 1/layer3', [tileset1]);
-  this.layer4 = map.createLayer('Group 1/layer4', [tileset1]);
-  this.layer5 = map.createLayer('Group 1/layer5', [tileset1]);
+  this.layer1 = map.createLayer('Groupe 1/layer1', [tileset1]);
+  this.layer2 = map.createLayer('Groupe 1/layer2', [tileset1]);
+  this.layer3 = map.createLayer('Groupe 1/layer3', [tileset1]);
+  this.layer4 = map.createLayer('Groupe 1/layer4', [tileset1]);
+  this.layer5 = map.createLayer('Groupe 1/layer5', [tileset1]);
 
   //SPAWNING PLAYER
-  let playerPos = mapToWorld(20, 25, this.layer1.layer)
+  let playerPos = mapToWorld(14, 21, this.layer1.layer)
   player = this.physics.add.sprite(playerPos.x, playerPos.y, 'playerDroiteHaut')
 
   //CURSOR
@@ -228,10 +253,33 @@ function create() {
   this.ambiance = this.sound.add("ambiance")
   this.ambiance.loop = true;
   this.ambiance.play();
-}
 
+  /* CAMERA */
+  this.cameras.main.startFollow(player, true);
+  this.cameras.main.setZoom(2);
 
-function update() {
+  //popup
+  this.popup1 = { bg: null, closeButton: null, action: null }
+  this.clickButton = this.add.sprite(1020, 350, 'button')
+    .setInteractive()
+    .on('pointerdown', () => managePopup(this.popup1));
+
+  this.popup1.bg = this.add.sprite(600, 300, "logo");
+  this.popup1.bg.alpha = 0;
+
+  this.popup1.closeButton = this.add.sprite(this.popup1.bg.x + this.popup1.bg.width / 2, this.popup1.bg.y - this.popup1.bg.height / 2, 'button')
+    .setInteractive()
+    .on('pointerdown', () => managePopup(this.popup1));
+  this.popup1.closeButton.alpha = 0;
+
+  this.popup1.action = this.add.sprite(this.popup1.bg.x, this.popup1.bg.y, "player")
+    .setInteractive()
+    .on('pointerdown', () => {
+      this.layer2.putTileAt(-1, 6, 6)
+      managePopup(this.popup1);
+    })
+  this.popup1.action.alpha = 0;
+  this.popup1.action.setActive(false);
 
   /* FAKE HEIGHT ON MAP */
 
@@ -240,14 +288,24 @@ function update() {
   this.layer3.setDepth(this.layer3.z = 2)
   this.layer4.setDepth(this.layer4.z = 2)
   this.layer5.setDepth(this.layer5.z = 2)
+}
 
+
+function update() {
+
+  this.text.setText([
+    'screen x: ' + this.input.x,
+    'screen y: ' + this.input.y,
+    'world x: ' + this.input.mousePointer.worldX,
+    'world y: ' + this.input.mousePointer.worldY,
+  ]);
 
   /* MOUVEMENT & PATHFINDING */
 
   player.body.setVelocity(0); // Stop any previous movement from the last frame
 
   //GETING CLICK
-  var coordsPointerInMap = worldToMap(this.MousePointer.x, this.MousePointer.y, this.layer1.layer);
+  var coordsPointerInMap = worldToMap(this.MousePointer.worldX, this.MousePointer.worldY, this.layer1.layer);
   var coordsPlayerInMap = worldToMap(player.x, player.y + player.height / 2, this.layer1.layer);
   if (focusedTile) {
     focusedTile.setVisible(true);
@@ -260,8 +318,8 @@ function update() {
   }
 
   //STARTING PATHFINDING ON CLICK
-  if (this.MousePointer.isDown && !this.playerIsMoving) {
-    coordsPointerInMap = worldToMap(this.MousePointer.x, this.MousePointer.y, this.layer1.layer);
+  if (this.MousePointer.isDown && !this.playerIsMoving && !aPopupisOpen) {
+    coordsPointerInMap = worldToMap(this.MousePointer.worldX, this.MousePointer.worldY, this.layer1.layer);
     coordsPlayerInMap = worldToMap(player.x, player.y + player.height / 2, this.layer1.layer);
     if (focusedTile && this.layer1.getTileAt(coordsPointerInMap.x, coordsPointerInMap.y).index != 0) {
       focusedTile.setVisible(true);
@@ -319,20 +377,25 @@ function update() {
       }
     }
   }
+  console.log(coordsPlayerInMap)
 
   /* PLAYER ARRIVED AT THE END OF THE FIRST MAP */
-  if (coordsPlayerInMap.x == 18, coordsPlayerInMap.y == 10 || coordsPlayerInMap.x == 19, coordsPlayerInMap.y == 10 || coordsPlayerInMap.x == 20, coordsPlayerInMap.y == 10 && playerChangedLevel == false) {
+
+  if (coordsPlayerInMap.x == 14, coordsPlayerInMap.y == 6 || coordsPlayerInMap.x == 15, coordsPlayerInMap.y == 6 || coordsPlayerInMap.x == 16, coordsPlayerInMap.y == 6 && playerChangedLevel == false) {
     this.cameras.main.fadeOut(1250);
     this.cameras.main.fadeIn(1250);
-    console.log("yes")
     let map = this.add.tilemap('map')
     var tileset1 = map.addTilesetImage('allassets', 'ground');
     this.layer2.destroy()
     this.layer3.destroy()
     this.layer4.destroy()
     this.layer5.destroy()
-    this.layer1 = map.createLayer('Group 2/layer1', [tileset1]);
-    this.layer2 = map.createLayer('Group 2/layer2', [tileset1]);
+    this.layer1 = map.createLayer('Groupe2/layer1', [tileset1]);
+    this.layer2 = map.createLayer('Groupe2/layer2', [tileset1]);
+    let playerPos = mapToWorld(21, 21, this.layer1.layer);
+    player.x = playerPos.x;
+    player.y = playerPos.y;
+    this.playerIsMoving = false;
     playerChangedLevel = true;
   }
 }
