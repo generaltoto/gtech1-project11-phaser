@@ -53,6 +53,8 @@ function worldToMap(x, y, layer) {
   return cell;
 }
 
+/* FUNCTION FOR POPUP*/
+
 function initiatePopup(level, popup, x, y){
   level.add.sprite(x, y, 'button')
     .setInteractive()
@@ -61,7 +63,7 @@ function initiatePopup(level, popup, x, y){
   popup.bg = level.add.sprite(x, y, "logo");
   popup.bg.alpha = 0;
 
-  popup.closeButton = level.add.sprite(popup.bg.x + popup.bg.width / 2, popup.bg.y - popup.bg.height / 2, 'button')
+  popup.closeButton = level.add.sprite(popup.bg.x + popup.bg.width / 2, popup.bg.y - popup.bg.height / 2, 'closebutton')
     .setInteractive()
     .on('pointerdown', () => managePopup(popup));
   popup.closeButton.alpha = 0;
@@ -254,6 +256,7 @@ function preload() {
   this.load.audio('ambiance', 'Assets/Lost_Memories.mp3')
   this.load.image('logo', 'Assets/task.png')
   this.load.image('button', 'Assets/POPUP.png')
+  this.load.image('closebutton', 'Assets/redcross.png')
 }
 
 
@@ -310,8 +313,8 @@ function create() {
   /* FAKE HEIGHT ON MAP */
 
   player.setDepth(player.z = 1)
-  this.layer2.setDepth(this.layer2.z = 1)
-  this.layer3.setDepth(this.layer3.z = 2)
+  this.layer2.setDepth(this.layer2.z = 0)
+  this.layer3.setDepth(this.layer3.z = 0)
   this.layer4.setDepth(this.layer4.z = 2)
   this.layer5.setDepth(this.layer5.z = 2)
 }
@@ -405,8 +408,6 @@ function update() {
     }
   }
 
-  console.log(coordsPlayerInMap)
-
   /* PLAYER ARRIVED AT THE END OF THE FIRST MAP */
 
   if (coordsPlayerInMap.x == 108 && coordsPlayerInMap.y == 100 || coordsPlayerInMap.x == 109 && coordsPlayerInMap.y == 100 || coordsPlayerInMap.x == 110 && coordsPlayerInMap.y == 100 && playerChangedLevel == false) {
@@ -439,7 +440,6 @@ function update() {
     this.layer4.setDepth(this.layer4.z = 2)
 
     //popups
-
     //first popup
     this.popup2 = { bg: null, closeButton: null, action: null }
     initiatePopup(this, this.popup2, -50, 1500)
@@ -466,6 +466,7 @@ function update() {
       }
     })
     
+    //third popup
     this.popup4 = { bg: null, closeButton: null, action: null }
     initiatePopup(this, this.popup4, 1025, 1365)
     this.popup4.alreadyBeenClicked = false;
