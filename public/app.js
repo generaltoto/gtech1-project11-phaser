@@ -10,7 +10,6 @@ const config = {
     preload: preload,
     create: create,
     update: update,
-
   },
 }
 
@@ -57,9 +56,15 @@ function worldToMap(x, y, layer) {
 /* FUNCTION FOR POPUP*/
 
 function initiatePopup(level, popup, x, y) {
-  level.add.sprite(x, y, 'button')
+  var test = level.add.sprite(x, y, 'button')
     .setInteractive()
-    .on('pointerdown', () => managePopup(popup));
+    .on('pointerdown', () => {
+      console.log(player.x)
+      console.log(level.layer1.layer.baseTileWidth);
+      if(player.x >= test.x - 3*level.layer1.layer.baseTileWidth && player.x <= test.x + 3*level.layer1.layer.baseTileWidth && player.y >= test.y - 3*level.layer1.layer.baseTileHeight && test.y <= test.y + 3* level.layer1.layer.baseTileHeight){
+        managePopup(popup);
+      }
+    });
 
   popup.bg = level.add.sprite(x, y, "task");
   popup.bg.alpha = 0;
@@ -266,8 +271,6 @@ function create() {
 
   //Coordinate
   this.text = this.add.text(10, 10, 'Cursors to move', { font: '16px Courier', fill: '#00ff00' }).setScrollFactor(0);
-  const screenCenterX = this.cameras.main.worldView.x + this.cameras.main.width / 2;
-  const screenCenterY = this.cameras.main.worldView.y + this.cameras.main.height / 2;
 
   /* MAP */
 
@@ -325,9 +328,6 @@ function create() {
 
 
 function update() {
-
-  screenCenterX = this.cameras.main.worldView.x + this.cameras.main.width / 2;
-  screenCenterY = this.cameras.main.worldView.y + this.cameras.main.height / 2;
 
   this.text.setText([
     'screen x: ' + this.input.x,
