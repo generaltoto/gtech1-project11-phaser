@@ -28,10 +28,10 @@ var aPopupisOpen = false;
 /*OPEN DOOR*/
 
 function openDoors(level) {
-  var Part1 = level.layer2.findByIndex(31);
-  var Part2 = level.layer2.findByIndex(33);
-  var Part3 = level.layer3.findByIndex(34);
-  var Part4 = level.layer3.findByIndex(32);
+  var Part1 = level.layer2.findByIndex(142);
+  var Part2 = level.layer2.findByIndex(144);
+  var Part3 = level.layer3.findByIndex(143);
+  var Part4 = level.layer3.findByIndex(145);
   console.log(Part1)
   level.layer2.putTileAt(-1, Part1.x, Part1.y)
   level.layer2.putTileAt(-1, Part2.x, Part2.y)
@@ -51,6 +51,28 @@ function worldToMap(x, y, layer) {
   cell.x = Math.round(x_pos + y_pos);
 
   return cell;
+}
+
+function initiatePopup(level, popup, x, y){
+  level.add.sprite(x, y, 'button')
+    .setInteractive()
+    .on('pointerdown', () => managePopup(popup));
+
+  popup.bg = level.add.sprite(x, y, "logo");
+  popup.bg.alpha = 0;
+
+  popup.closeButton = level.add.sprite(popup.bg.x + popup.bg.width / 2, popup.bg.y - popup.bg.height / 2, 'button')
+    .setInteractive()
+    .on('pointerdown', () => managePopup(popup));
+  popup.closeButton.alpha = 0;
+
+  popup.action = level.add.sprite(popup.bg.x, popup.bg.y, "player")
+  popup.action.alpha = 0;
+  popup.action.setActive(false);
+
+  popup.bg.setDepth(popup.bg.z = 100);
+  popup.closeButton.setDepth(popup.closeButton.z = 100);
+  popup.action.setDepth(popup.action.z = 100);
 }
 
 /* FUNCTION POPUP FOR RIDDLE*/
@@ -104,7 +126,7 @@ function mapToWorld(x, y, layer) {
   var pos = { x: 0, y: 0 };
 
   pos.x = (x - y) * layer.baseTileWidth / 2 + 16 + layer.x;
-  pos.y = (x + y) * layer.baseTileHeight / 2 + 24 + layer.y;
+  pos.y = (x + y) * layer.baseTileHeight / 2 + 8 + layer.y;
 
   return pos;
 }
@@ -223,16 +245,13 @@ function changeSprite(tile, nextTileInPath) {
 
 function preload() {
   this.load.image('ground', 'Assets/allassets.png');
-  this.load.image('carousel1', 'Assets/carousel.png');
-  this.load.image('bigwheel1', 'Assets/bigwheel.png');
-  this.load.image('rollercoaster1', 'Assets/rollercoaster.png');
   this.load.tilemapTiledJSON('map', 'Assets/finalmap.json');
 
   this.load.image('playerDroiteBas', 'Assets/fantome_dirdb.png')
   this.load.image('playerDroiteHaut', 'Assets/fantome_dirdh.png')
   this.load.image('playerGaucheBas', 'Assets/fantome_dirgb.png')
   this.load.image('playerGaucheHaut', 'Assets/fantome_dirgh.png')
-  this.load.audio('ambiance', 'Assets/Melodie_Projet_jeu.mp3')
+  this.load.audio('ambiance', 'Assets/Lost_Memories.mp3')
   this.load.image('logo', 'Assets/task.png')
   this.load.image('button', 'Assets/POPUP.png')
 }
@@ -275,30 +294,18 @@ function create() {
 
   /* CAMERA */
   this.cameras.main.startFollow(player, true);
-  // this.cameras.main.setZoom(2);
+  this.cameras.main.setZoom(2);
 
   //popup level 1
   this.popup1 = { bg: null, closeButton: null, action: null }
-  this.clickButton = this.add.sprite(270, 1750, 'button')
-    .setInteractive()
-    .on('pointerdown', () => managePopup(this.popup1));
-
-  this.popup1.bg = this.add.sprite(400, 1780, "logo");
-  this.popup1.bg.alpha = 0;
-
-  this.popup1.closeButton = this.add.sprite(this.popup1.bg.x + this.popup1.bg.width / 2, this.popup1.bg.y - this.popup1.bg.height / 2, 'button')
-    .setInteractive()
-    .on('pointerdown', () => managePopup(this.popup1));
-  this.popup1.closeButton.alpha = 0;
-
-  this.popup1.action = this.add.sprite(this.popup1.bg.x, this.popup1.bg.y, "player")
-    .setInteractive()
+  initiatePopup(this, this.popup1, 270, 1750);
+  this.popup1.action.setInteractive()
     .on('pointerdown', () => {
       openDoors(this);
       managePopup(this.popup1);
     })
-  this.popup1.action.alpha = 0;
-  this.popup1.action.setActive(false);
+  //var for level 2
+  this.counterClicked = 0;
 
   /* FAKE HEIGHT ON MAP */
 
@@ -321,6 +328,7 @@ function update() {
     'world x: ' + this.input.mousePointer.worldX,
     'world y: ' + this.input.mousePointer.worldY,
   ]);
+  this.text.setDepth(this.text.z = 10)
 
   /* MOUVEMENT & PATHFINDING */
 
@@ -397,11 +405,15 @@ function update() {
     }
   }
 
+  console.log(coordsPlayerInMap)
+
   /* PLAYER ARRIVED AT THE END OF THE FIRST MAP */
 
-  if (coordsPlayerInMap.x == 110, coordsPlayerInMap.y == 102 || coordsPlayerInMap.x == 111, coordsPlayerInMap.y == 102 || coordsPlayerInMap.x == 112, coordsPlayerInMap.y == 102 && playerChangedLevel == false) {
-    this.cameras.main.fadeOut(1250);
-    this.cameras.main.fadeIn(1250);
+  if (coordsPlayerInMap.x == 108 && coordsPlayerInMap.y == 100 || coordsPlayerInMap.x == 109 && coordsPlayerInMap.y == 100 || coordsPlayerInMap.x == 110 && coordsPlayerInMap.y == 100 && playerChangedLevel == false) {
+    
+    //load new map
+    this.cameras.main.fadeOut(1500);
+    this.cameras.main.fadeIn(1500);
     let map = this.add.tilemap('map')
     var tileset1 = map.addTilesetImage('allassets', 'ground');
     this.layer2.destroy()
@@ -412,61 +424,63 @@ function update() {
     this.layer2 = map.createLayer('Groupe 2/layer2', [tileset1]);
     this.layer3 = map.createLayer('Groupe 2/layer3', [tileset1]);
     this.layer4 = map.createLayer('Groupe 2/layer4', [tileset1]);
+    
+    //reset pos
     let playerPos = mapToWorld(114, 117, this.layer1.layer);
     player.x = playerPos.x;
     player.y = playerPos.y;
-    player.setDepth(player.z = 1)
-    this.layer2.setDepth(this.layer2.z = 2)
-    this.layer3.setDepth(this.layer3.z = 3)
-    this.layer4.setDepth(this.layer4.z = 4)
-
-    popup 1 level 2
-    this.popup2 = { bg: null, closeButton: null, action: null }
-    this.clickButton = this.add.sprite(-50, 1500, 'button')
-      .setInteractive()
-      .on('pointerdown', () => managePopup(this.popup2));
-    console.log()
-
-    this.popup3 = { bg: null, closeButton: null, action: null }
-    this.clickButton = this.add.sprite(-130, 1350, 'button')
-      .setInteractive()
-      .on('pointerdown', () => managePopup(this.popup2));
-    console.log()
-
-    this.popup4 = { bg: null, closeButton: null, action: null }
-    this.clickButton = this.add.sprite(-50, 1500, 'button')
-      .setInteractive()
-      .on('pointerdown', () => managePopup(this.popup2));
-    console.log()
-
-    this.popup2.bg = this.add.sprite(-130, 1500, "logo");
-    this.popup2.bg.setDepth(this.popup2.bg.z = 10)
-    this.popup2.bg.alpha = 0;
-
-    this.popup3.bg = this.add.sprite(-130, 1350, "logo");
-    this.popup3.bg.setDepth(this.popup2.bg.z = 10)
-    this.popup3.bg.alpha = 0;
-
-    this.popup4.bg = this.add.sprite(-130, 1540, "logo");
-    this.popup4.bg.setDepth(this.popup2.bg.z = 10)
-    this.popup4.bg.alpha = 0;
-
-    this.popup2.closeButton = this.add.sprite(this.popup2.bg.x + this.popup2.bg.width / 2, this.popup2.bg.y - this.popup2.bg.height / 2, 'button')
-      .setInteractive()
-      .on('pointerdown', () => managePopup(this.popup2));
-    this.popup2.closeButton.alpha = 0;
-
-    this.popup2.action = this.add.sprite(this.popup2.bg.x, this.popup2.bg.y, "player")
-      .setInteractive()
-      .on('pointerdown', () => {
-        openDoors(this);
-        managePopup(this.popup2);
-      })
-    this.popup2.action.alpha = 0;
-    this.popup1.action.setActive(false);
     this.playerIsMoving = false;
     playerChangedLevel = true;
     this.nextTileInPath = null;
+
+    //set layers depth again
+    this.layer2.setDepth(this.layer2.z = 2)
+    this.layer3.setDepth(this.layer3.z = 2)
+    this.layer4.setDepth(this.layer4.z = 2)
+
+    //popups
+
+    //first popup
+    this.popup2 = { bg: null, closeButton: null, action: null }
+    initiatePopup(this, this.popup2, -50, 1500)
+    this.popup2.alreadyBeenClicked = false;
+    this.popup2.action.setInteractive()
+    .on('pointerdown', () => {
+      if(!this.popup2.alreadyBeenClicked){
+        this.counterClicked++;
+        this.popup2.alreadyBeenClicked = true;
+        managePopup(this.popup2)
+      }
+    })
+
+    //second popup
+    this.popup3 = { bg: null, closeButton: null, action: null }
+    initiatePopup(this, this.popup3, -130, 1350)
+    this.popup3.alreadyBeenClicked = false;
+    this.popup3.action.setInteractive().
+    on('pointerdown', () => {
+      if(!this.popup3.alreadyBeenClicked){
+        this.counterClicked++;
+        this.popup3.alreadyBeenClicked = true;
+        managePopup(this.popup3)
+      }
+    })
+    
+    this.popup4 = { bg: null, closeButton: null, action: null }
+    initiatePopup(this, this.popup4, 1025, 1365)
+    this.popup4.alreadyBeenClicked = false;
+    this.popup4.action.setInteractive()
+    .on('pointerdown', () => {
+      if(!this.popup4.alreadyBeenClicked){
+        this.counterClicked++;
+        this.popup4.alreadyBeenClicked = true;
+        managePopup(this.popup4)
+      }
+    })
+  }
+
+  if(this.counterClicked === 3){
+    openDoors(this)
   }
 
 
