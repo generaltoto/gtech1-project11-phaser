@@ -32,7 +32,6 @@ function openDoors(level) {
   var Part2 = level.layer2.findByIndex(144);
   var Part3 = level.layer3.findByIndex(143);
   var Part4 = level.layer3.findByIndex(145);
-  console.log(Part1)
   level.layer2.putTileAt(-1, Part1.x, Part1.y)
   level.layer2.putTileAt(-1, Part2.x, Part2.y)
   level.layer3.putTileAt(-1, Part3.x, Part3.y)
@@ -60,8 +59,6 @@ function initiatePopup(level, popup, x, y) {
   var test = level.add.sprite(x, y, 'button')
     .setInteractive()
     .on('pointerdown', () => {
-      console.log(player.x)
-      console.log(level.layer1.layer.baseTileWidth);
       if(player.x >= test.x - 3*level.layer1.layer.baseTileWidth && player.x <= test.x + 3*level.layer1.layer.baseTileWidth && player.y >= test.y - 3*level.layer1.layer.baseTileHeight && test.y <= test.y + 3* level.layer1.layer.baseTileHeight){
         managePopup(popup);
       }
