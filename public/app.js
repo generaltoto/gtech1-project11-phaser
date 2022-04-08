@@ -1,7 +1,7 @@
 const config = {
   type: Phaser.AUTO,
   parent: 'gameContainer',
-  width: 1600,
+  width: 1750,
   height: 800,
   physics: {
     default: 'arcade',
@@ -23,6 +23,7 @@ let mapHeight = 6
 var focusedTile = null;
 var playerChangedLevel = false;
 var aPopupisOpen = false;
+
 
 /*OPEN DOOR*/
 
@@ -242,7 +243,7 @@ function changeSprite(tile, nextTileInPath) {
 
 function preload() {
   this.load.image('ground', 'Assets/allassets.png');
-  this.load.tilemapTiledJSON('map', 'Assets/finalmap.json');
+  this.load.tilemapTiledJSON('map', 'Assets/map_finale.json');
 
   this.load.image('playerDroiteBas', 'Assets/fantome_dirdb.png')
   this.load.image('playerDroiteHaut', 'Assets/fantome_dirdh.png')
