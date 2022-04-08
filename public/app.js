@@ -32,7 +32,6 @@ function openDoors(level) {
   var Part2 = level.layer2.findByIndex(144);
   var Part3 = level.layer3.findByIndex(143);
   var Part4 = level.layer3.findByIndex(145);
-  console.log(Part1)
   level.layer2.putTileAt(-1, Part1.x, Part1.y)
   level.layer2.putTileAt(-1, Part2.x, Part2.y)
   level.layer3.putTileAt(-1, Part3.x, Part3.y)
@@ -60,8 +59,6 @@ function initiatePopup(level, popup, x, y) {
   var test = level.add.sprite(x, y, 'button')
     .setInteractive()
     .on('pointerdown', () => {
-      console.log(player.x)
-      console.log(level.layer1.layer.baseTileWidth);
       if(player.x >= test.x - 3*level.layer1.layer.baseTileWidth && player.x <= test.x + 3*level.layer1.layer.baseTileWidth && player.y >= test.y - 3*level.layer1.layer.baseTileHeight && test.y <= test.y + 3* level.layer1.layer.baseTileHeight){
         managePopup(popup);
       }
@@ -103,16 +100,26 @@ function managePopup(popup) {
   popup.action.setActive(false);
 }
 
+/* UPDATING MAP COORDINATES TO CANVA COORDINATES*/
+
+function mapToWorld(x, y, layer) {
+  var pos = { x: 0, y: 0 };
+
+  pos.x = (x - y) * layer.baseTileWidth / 2 + 16 + layer.x;
+  pos.y = (x + y) * layer.baseTileHeight / 2 + 24 + layer.y;
+
+  return pos;
+}
+
 /* GETTING X AND Y COORDINATES AND CREATING KEYS*/
 
 var focusedTile = null;
-var focusedTile2 = null;
 
 function worldToMap(x, y, layer) {
   var cell = { x: 0, y: 0 };
 
   var x_pos = (x - 16 - layer.x) / layer.baseTileWidth;
-  var y_pos = (y - 16 - layer.y) / layer.baseTileHeight;
+  var y_pos = (y - 8 - layer.y) / layer.baseTileHeight;
 
   cell.y = Math.round(y_pos - x_pos);
   cell.x = Math.round(x_pos + y_pos);
@@ -124,7 +131,7 @@ function mapToWorld(x, y, layer) {
   var pos = { x: 0, y: 0 };
 
   pos.x = (x - y) * layer.baseTileWidth / 2 + 16 + layer.x;
-  pos.y = (x + y) * layer.baseTileHeight / 2 + 16 + layer.y;
+  pos.y = (x + y) * layer.baseTileHeight / 2 + 8 + layer.y;
 
   return pos;
 }
@@ -259,9 +266,6 @@ function preload() {
 
 function create() {
 
-  //Coordinate
-  this.text = this.add.text(10, 10, 'Cursors to move', { font: '16px Courier', fill: '#00ff00' }).setScrollFactor(0);
-
   /* MAP */
 
   let map = this.add.tilemap('map');
@@ -318,14 +322,6 @@ function create() {
 
 
 function update() {
-
-  this.text.setText([
-    'screen x: ' + this.input.x,
-    'screen y: ' + this.input.y,
-    'world x: ' + this.input.mousePointer.worldX,
-    'world y: ' + this.input.mousePointer.worldY,
-  ]);
-  this.text.setDepth(this.text.z = 10)
 
   /* MOUVEMENT & PATHFINDING */
 
@@ -402,8 +398,6 @@ function update() {
     }
   }
 
-  console.log(coordsPlayerInMap)
-
   /* PLAYER ARRIVED AT THE END OF THE FIRST MAP */
 
   if (coordsPlayerInMap.x == 108 && coordsPlayerInMap.y == 100 || coordsPlayerInMap.x == 109 && coordsPlayerInMap.y == 100 || coordsPlayerInMap.x == 110 && coordsPlayerInMap.y == 100 && playerChangedLevel == false) {
@@ -430,8 +424,7 @@ function update() {
     this.nextTileInPath = null;
 
     //set layers depth again
-    player.setDepth(player.z = 1)
-    this.layer2.setDepth(this.layer2.z = 0)
+    this.layer2.setDepth(this.layer2.z = 2)
     this.layer3.setDepth(this.layer3.z = 2)
     this.layer4.setDepth(this.layer4.z = 2)
 
